@@ -4,7 +4,7 @@
     public static int player1Score = 0;
     public static int player2Score = 0;
     public static int lastWinnerID = -1;
-    public static int cageID = 2;
+    public static int cageID = 0;
 
     public static void Reset()
     {

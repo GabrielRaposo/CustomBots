@@ -32,8 +32,8 @@ public class PlayerConfigurations
         player1.input = "Key_";
         player1.color = Color.white;
 
-        player2.input = "Key_";
-        //player2.input = "Mou_";
+        //player2.input = "Key_";
+        player2.input = "Mou_";
         player2.color = Color.white;
         hasBeenInitiated = true;
     }

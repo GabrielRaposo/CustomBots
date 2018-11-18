@@ -202,7 +202,7 @@ public class Player : MonoBehaviour {
             if(hitbox && hitbox.playerID != ID)
             {
                 if (health) health.TakeDamage((int)hitbox.damage);
-                SetKnockback(hitbox.knockback, collision.transform.position);
+                SetKnockback(hitbox.allignKnockbackWithRotation, hitbox.Knockback, collision.transform.position);
             }
         } else 
         if (collision.CompareTag("Bullet"))
@@ -211,19 +211,19 @@ public class Player : MonoBehaviour {
             if(bullet && bullet.playerID != ID)
             {
                 if (bullet) health.TakeDamage((int)bullet.damage);
-                SetKnockback(bullet.knockback, collision.transform.position);
+                SetKnockback(false, bullet.knockback, collision.transform.position);
                 bullet.Destroy();
             }
         }
     }
 
-    private void SetKnockback(Vector2 knockback, Vector2 origin)
+    private void SetKnockback(bool allign, Vector2 knockback, Vector2 origin)
     {
         state = State.Stunned;
         damageBurst.Play();
         damageAudio.Play();
 
-        if(Mathf.Abs(knockback.x) < 1)
+        if (Mathf.Abs(knockback.x) < 1)
         {
             if (transform.position.x < origin.x)
                 knockback += Vector2.left;
@@ -232,7 +232,8 @@ public class Player : MonoBehaviour {
         }
         knockback.y = 0;
         knockback += Vector2.up;
-        rb.velocity = knockback * 4;
+        rb.velocity = knockback * 2;
+        
 
         movementUpgrade.Interrupt();
         attackUpgrade.Interrupt();

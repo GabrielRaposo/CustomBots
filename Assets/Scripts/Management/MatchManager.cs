@@ -15,11 +15,12 @@ public class MatchManager : MonoBehaviour {
     public Health player1Health;
     public Health player2Health;
     public PauseManager pauseManager;
+    public CageManager cageManager;
 
     [Header("Player Stuff")]
     public GameObject playerPrefab;
-    public Color player1Color;
-    public Color player2Color;
+    private Color player1Color;
+    private Color player2Color;
 
     private GameObject player1;
     private GameObject player2;
@@ -46,12 +47,17 @@ public class MatchManager : MonoBehaviour {
         player2Health.matchManager = this;
 
         PlayerConfigurations.BaseSetup();
-        PlayerConfigurations.player1.color = player1Color;
-        PlayerConfigurations.player2.color = player2Color;
+        //PlayerConfigurations.player1.color = player1Color;
+        //PlayerConfigurations.player2.color = player2Color;
+        player1Color = PlayerConfigurations.player1.color;
+        player2Color = PlayerConfigurations.player2.color;
 
         player1.GetComponent<Player>().Init(1, player1input = PlayerConfigurations.player1.input, player1Color, player1Health);
         player2.GetComponent<Player>().Init(2, player2input = PlayerConfigurations.player2.input, player2Color, player2Health);
         battleStartPanel.HideAll();
+
+        player1.SetActive(false);
+        player2.SetActive(false);
 
         if (!skipShop) {
             roundDisplay.gameObject.SetActive(false);
@@ -88,6 +94,17 @@ public class MatchManager : MonoBehaviour {
     {
         yield return new WaitForSeconds(1f);
         shop.gameObject.SetActive(false);
+
+        player1.SetActive(true);
+        player1.transform.position = Vector3.left * 3;
+        player2.SetActive(true);
+        player2.transform.position = Vector3.right * 3;
+
+        player1Health.gameObject.SetActive(true);
+        player2Health.gameObject.SetActive(true);
+
+        cageManager.CallTimer();
+
         if (!skipRoundDisplay)
         {
             roundDisplay.gameObject.SetActive(true);

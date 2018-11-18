@@ -6,11 +6,13 @@ using TMPro;
 
 public class InstallationPanel : MonoBehaviour {
 
+    public GameObject playerPreview;
     public TextMeshProUGUI label;
 
     [Header("Panels Control")]
     public GameObject inputPanel;
     public ConfirmationPanel confirmationPanel;
+    public HealthPreviewPanel healthPreviewPanel;
 
     [Header("Input")]
     public TextMeshProUGUI actionDisplay;
@@ -22,6 +24,7 @@ public class InstallationPanel : MonoBehaviour {
 
     ActionType[] actionTypes = { ActionType.Movement, ActionType.Attack };
 
+    private PlayerCOM playerCOM;
     private Shop shop;
     private int id;
     private Player player;
@@ -36,6 +39,11 @@ public class InstallationPanel : MonoBehaviour {
         installationSound = GetComponent<AudioSource>();
     }
 
+    public void DisablePreview()
+    {
+        if (playerPreview) playerPreview.SetActive(false);
+    }
+
     public void SetPanels(Shop shop, int id, Player player, Vector3 position)
     {
         this.shop = shop;
@@ -48,8 +56,13 @@ public class InstallationPanel : MonoBehaviour {
         inputPanel.SetActive(true);
         confirmationPanel.gameObject.SetActive(false);
         index = 0;
-        SetActionDisplay();
 
+        playerPreview = Instantiate(playerPreview, new Vector3((id == 1) ? -4.5f : 4.5f, -3.5f), Quaternion.identity);
+        playerPreview.SetActive(true);
+        playerCOM = playerPreview.GetComponent<PlayerCOM>();
+        playerCOM.SetLEDsColor((id == 1) ? PlayerConfigurations.player1.color : PlayerConfigurations.player2.color);
+
+        SetActionDisplay();
         SetUpgradeLabels();
 
         label.text = "Player " + id;
@@ -92,6 +105,7 @@ public class InstallationPanel : MonoBehaviour {
             ReturnToPanel(-1);
         }
 
+        if (!upgradeList.isActiveAndEnabled) return;
         float horInput = Input.GetAxisRaw(playerInputIndex + "Horizontal");
         if (horInput > 0) {
             upgradeList.UpdateIndexValue(1);
@@ -107,12 +121,12 @@ public class InstallationPanel : MonoBehaviour {
         {
             default:
             case ActionType.Movement:
-                upgradeList.Setup(player, shop.movementInstalls, ActionType.Movement);
+                upgradeList.Setup(player, playerCOM, shop.movementInstalls, ActionType.Movement);
                 actionDisplay.text = "Movement";
                 break;
 
             case ActionType.Attack:
-                upgradeList.Setup(player, shop.attackInstalls, ActionType.Attack);
+                upgradeList.Setup(player, playerCOM, shop.attackInstalls, ActionType.Attack);
                 actionDisplay.text = "Attack";
                 break;
         }
@@ -172,13 +186,19 @@ public class InstallationPanel : MonoBehaviour {
             case 0: //retorna para a tela de movement
                 if (installationSound) installationSound.Play();
                 currentMovementDisplay.Free();
+                healthPreviewPanel.MoveUpgradeValue = 0;
+                healthPreviewPanel.AttackUpgradeValue = 0;
+                healthPreviewPanel.UpdatePermDisplay();
                 SetActionDisplay();
                 break;
 
             case 1: //retorna para a tela de attack
                 if (installationSound) installationSound.Play();
                 currentAttackDisplay.Free();
+                healthPreviewPanel.AttackUpgradeValue = 0;
+                healthPreviewPanel.UpdatePermDisplay();
                 inputPanel.SetActive(true);
+                SetActionDisplay();
                 confirmationPanel.gameObject.SetActive(false);
                 break;
         }
@@ -189,11 +209,17 @@ public class InstallationPanel : MonoBehaviour {
         switch (actionType)
         {
             case ActionType.Movement:
+                healthPreviewPanel.MoveUpgradeValue = shop.movementInstalls[index].prefab.GetComponent<Upgrade>().health;
+                healthPreviewPanel.UpdatePermDisplay();
                 currentMovementDisplay.SetUpgrade(index, shop.movementInstalls[index]);
+                playerCOM.InstallMovementUpgrade(shop.movementInstalls[index].prefab);
                 break;
 
             case ActionType.Attack:
+                healthPreviewPanel.AttackUpgradeValue = shop.attackInstalls[index].prefab.GetComponent<Upgrade>().health;
+                healthPreviewPanel.UpdatePermDisplay();
                 currentAttackDisplay.SetUpgrade(index, shop.attackInstalls[index]);
+                playerCOM.InstallAttackUpgrade(shop.attackInstalls[index].prefab);
                 break;
         }
     }

@@ -7,11 +7,16 @@ public class PlayerCOM : MonoBehaviour
     [Header("Player")]
     public Transform aim;
 
+    [Header("Leds")]
+    public SpriteRenderer LEDsIn;
+    public SpriteRenderer LEDsOut;
+
     [Header("Action components")]
     public Upgrade movementUpgrade;
     public Upgrade attackUpgrade;
 
     public ActionType actionType;
+    public bool startActive = true;
 
     [HideInInspector] public GameObject movementUpgradeObject;
     [HideInInspector] public GameObject attackUpgradeObject;
@@ -31,15 +36,18 @@ public class PlayerCOM : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
 
-        movementUpgrade.Initiate(0, rb);
-        attackUpgrade.Initiate(0, rb);
+        if (startActive)
+        {
+            movementUpgrade.Initiate(0, rb);
+            attackUpgrade.Initiate(0, rb);
 
-        StartCoroutine(LookAround());
-        if (actionType == ActionType.Movement) {
-            StartCoroutine(TimedMove());
-        } else
-        if (actionType == ActionType.Attack) {
-            StartCoroutine(TimedAttack());
+            StartCoroutine(LookAround());
+            if (actionType == ActionType.Movement) {
+                StartCoroutine(TimedMove());
+            } else
+            if (actionType == ActionType.Attack) {
+                StartCoroutine(TimedAttack());
+            }
         }
     }
 
@@ -88,5 +96,45 @@ public class PlayerCOM : MonoBehaviour
         direction = direction.normalized;
         var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         t.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+    }
+
+    public void InstallMovementUpgrade(GameObject upgradeObject)
+    {
+        RemoveMovementUpgrade();
+        upgradeObject = Instantiate(upgradeObject);
+        upgradeObject.transform.parent = transform;
+        upgradeObject.transform.localScale = Vector3.one;
+        movementUpgradeObject = upgradeObject;
+        movementUpgradeObject.transform.position = transform.position;
+        movementUpgrade = upgradeObject.GetComponent<Upgrade>();
+        movementUpgrade.Initiate(0, GetComponent<Rigidbody2D>());
+    }
+
+    public void InstallAttackUpgrade(GameObject upgradeObject)
+    {
+        RemoveAttackUpgrade();
+        upgradeObject = Instantiate(upgradeObject);
+        upgradeObject.transform.parent = transform;
+        upgradeObject.transform.localScale = Vector3.one;
+        attackUpgradeObject = upgradeObject;
+        attackUpgradeObject.transform.position = transform.position;
+        attackUpgrade = upgradeObject.GetComponent<Upgrade>();
+        attackUpgrade.Initiate(0, GetComponent<Rigidbody2D>());
+    }
+
+    public void RemoveMovementUpgrade()
+    {
+        if (movementUpgradeObject) Destroy(movementUpgradeObject);
+    }
+
+    public void RemoveAttackUpgrade()
+    {
+        if (attackUpgradeObject) Destroy(attackUpgradeObject);
+    }
+
+    public void SetLEDsColor(Color color)
+    {
+        if (LEDsIn)  LEDsIn.color  = color;
+        if (LEDsOut) LEDsOut.color = color;
     }
 }

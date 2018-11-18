@@ -5,9 +5,12 @@ using TMPro;
 
 public class UpgradeScrollList : HorizontalScrollList
 {
+    [Space(30)]
+    public HealthPreviewPanel healthPreviewPanel;
     public TextMeshProUGUI descriptionDisplay;
     public AudioSource selectionMoveSound;
 
+    private PlayerCOM playerPreview;
     private List<UpgradeInstall> list;
     private ActionType currentType;
     private bool setup;
@@ -15,8 +18,9 @@ public class UpgradeScrollList : HorizontalScrollList
     private bool onCooldown;
     public int index { get; private set; }
 
-    public void Setup (Player player, List<UpgradeInstall> list, ActionType currentType)
+    public void Setup (Player player, PlayerCOM playerPreview, List<UpgradeInstall> list, ActionType currentType)
     {
+        this.playerPreview = playerPreview;
         this.list = list;
         this.currentType = currentType;
         playerInputIndex = player.inputIndex;
@@ -68,7 +72,21 @@ public class UpgradeScrollList : HorizontalScrollList
     {
         display.text = list[index].name;
         descriptionDisplay.text = list[index].description;
-        //install on player
+
+        Upgrade upgrade = list[index].prefab.GetComponent<Upgrade>();
+        switch (currentType)
+        {
+            case ActionType.Movement:
+                healthPreviewPanel.MoveUpgradeValue = upgrade.health;
+                playerPreview.InstallMovementUpgrade(list[index].prefab);
+                playerPreview.RemoveAttackUpgrade();
+                break;
+
+            case ActionType.Attack:
+                healthPreviewPanel.AttackUpgradeValue = upgrade.health;
+                playerPreview.InstallAttackUpgrade(list[index].prefab);
+                break;
+        }
 
         StartCoroutine(CooldownTimer());
     }

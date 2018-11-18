@@ -13,6 +13,7 @@ public class CreditsScreen : MonoBehaviour {
 	
 	public void SwapScreen()
     {
+        Debug.Log("call");
         if (onMainPanel) {
             buttonLabel.text = "General";
             mainPanel.SetActive(false);

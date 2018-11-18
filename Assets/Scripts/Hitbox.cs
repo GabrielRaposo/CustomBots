@@ -6,17 +6,28 @@ public class Hitbox : MonoBehaviour
 {
     public int playerID;
     public float damage;
-    public Vector2 knockback;
     public bool allignKnockbackWithRotation;
+    public Vector2 knockback;
+    public Vector2 Knockback
+    {
+        get
+        {
+            if (allignKnockbackWithRotation)
+            {
+                return RaposUtil.RotateVector(knockback, transform.rotation.eulerAngles.z);
+            }
+            return knockback;
+        }
+
+        set
+        {
+            knockback = value;
+        }
+    }
 
     private void Awake()
     {
         transform.tag = "Hitbox";
         gameObject.layer = LayerMask.NameToLayer("Hitbox");
-
-        if (allignKnockbackWithRotation)
-        {
-            knockback = RaposUtil.RotateVector(knockback, transform.rotation.eulerAngles.z);
-        }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class SelectionSimpleInput : MonoBehaviour, ISubmitHandler, ISelectHandler, IDeselectHandler
+public class SelectionSimpleInput : MonoBehaviour, ISelectHandler, IDeselectHandler
 {
     public UnityEvent selectEvent;
     public UnityEvent deselectEvent;
-    public UnityEvent submitEvent;
 
     public void OnSelect(BaseEventData eventData)
     {
@@ -16,10 +16,5 @@ public class SelectionSimpleInput : MonoBehaviour, ISubmitHandler, ISelectHandle
     public void OnDeselect(BaseEventData eventData)
     {
         deselectEvent.Invoke();
-    }
-
-    public void OnSubmit(BaseEventData eventData)
-    {
-        submitEvent.Invoke();
     }
 }

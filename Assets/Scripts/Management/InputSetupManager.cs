@@ -5,12 +5,16 @@ using UnityEngine.EventSystems;
 
 public class InputSetupManager : MonoBehaviour {
 
+    [Header("Main")]
     public MenuNavigationManager navigationManager;
-    public PlayerInputPanel leftPlayerPanel;
-    public PlayerInputPanel rightPlayerPanel;
+    public GameObject playerPanelPrefab;
+    public Transform panelGroupAnchor;
 
+    [Header("After setup")]
     public GameObject buttonsPanel;
     public StylizedUIButton firstSelection;
+
+    private List<PlayerInputPanel> playerPanels;
 
     private int controllerSetup = 1;
     private string p1Controller;
@@ -20,9 +24,24 @@ public class InputSetupManager : MonoBehaviour {
     void Start ()
     {
         PlayerConfigurations.BaseSetup();
-        leftPlayerPanel.SetSelectedState();
-        rightPlayerPanel.SetDeselectedState();
-	}
+
+        playerPanels = new List<PlayerInputPanel>();
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject panelObject = Instantiate(playerPanelPrefab, panelGroupAnchor);
+            panelObject.SetActive(true);
+
+            PlayerInputPanel pip = panelObject.GetComponent<PlayerInputPanel>();
+            if (pip)
+            {
+                pip.SetLabel(i);
+                if (i == 0) pip.SetSelectedState();
+                else        pip.SetDeselectedState();
+                playerPanels.Add(pip);
+            }
+        }
+        playerPanelPrefab.SetActive(false);
+    }
 	
 	void Update () {
 		switch(controllerSetup)
@@ -72,12 +91,12 @@ public class InputSetupManager : MonoBehaviour {
             PlayerConfigurations.player1.input = inputIndex;
             p1Controller = inputIndex;
 
-            leftPlayerPanel.SetReadyState(s);
-            rightPlayerPanel.SetSelectedState();
+            playerPanels[0].SetReadyState(0, s, inputIndex);
+            playerPanels[1].SetSelectedState();
         } else {
             PlayerConfigurations.player2.input = inputIndex;
 
-            rightPlayerPanel.SetReadyState(s);
+            playerPanels[1].SetReadyState(1, s, inputIndex);
         }
 
         controllerSetup++;

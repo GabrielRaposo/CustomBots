@@ -20,7 +20,7 @@ public class CageManager : MonoBehaviour {
         {
             if(index == i) {
                 cages[i].cage.SetActive(true);
-                if(cages[i].timer) cages[i].timer.CallTimer();
+                //if(cages[i].timer) cages[i].timer.CallTimer();
             } else {
                 cages[i].cage.SetActive(false);
             }

@@ -83,7 +83,6 @@ public class LanceAttack : Upgrade
         direction = direction.normalized;
         var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        bladeHitbox.knockback = direction;
     }
 
     public override void Release()

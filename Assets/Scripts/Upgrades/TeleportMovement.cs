@@ -85,7 +85,7 @@ public class TeleportMovement : Upgrade
 
     public override void RotateAround(Vector3 direction)
     {
-        if (rotationLock) return;
+        if (rotationLock || active) return;
 
         direction = direction.normalized;
         var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -135,7 +135,7 @@ public class TeleportMovement : Upgrade
 
     private bool isOffscreen(Vector2 position)
     {
-        float x = 5.2f, y = 3.2f;
+        float x = 7.5f, y = 4.5f;
         if (Mathf.Abs(position.x) > x || Mathf.Abs(position.y) > y) return true;
         return false;
     }

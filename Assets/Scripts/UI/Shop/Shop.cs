@@ -49,16 +49,6 @@ public class Shop : MonoBehaviour
         rightPanel = rPanel.GetComponent<InstallationPanel>();
         rightPanel.SetPanels(this, 2, rightPlayer, Vector3.right * 500);
 
-        //clear player default installs
-
-        //if(Match.lastWinnerID == 2) {
-        //    CallInstall(leftPlayer, 0, ActionType.Movement);
-        //    CallInstall(leftPlayer, 0, ActionType.Attack);
-        //} else {
-        //    CallInstall(rightPlayer, 0, ActionType.Movement);
-        //    CallInstall(rightPlayer, 0, ActionType.Attack);
-        //}
-
     }
 
     public void CallInstall(Player player, int i, ActionType type)
@@ -102,6 +92,10 @@ public class Shop : MonoBehaviour
         {
             if (!b) return;
         }
+
+        leftPanel.DisablePreview();
+        rightPanel.DisablePreview();
+
         matchManager.StartCoroutine(matchManager.StartMatch());
     }
 
